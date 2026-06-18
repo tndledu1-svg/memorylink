@@ -272,5 +272,6 @@ export default function Home() {
         input::placeholder,textarea::placeholder{color:#4a5568}
       `}</style>
     </div>
+export const config = { runtime: 'nodejs' }
   );
 }
