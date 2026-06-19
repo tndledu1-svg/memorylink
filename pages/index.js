@@ -76,59 +76,76 @@ function JobResultModal({ job, onClose }) {
   );
 }
 
-// ── 우측 목업: KRDS 스타일 (상단바 + 진행 스텝 + 말풍선 + 하단 카드) ──
+// ── 우측 Hero: 실제 생성된 샘플 영상 재생 (영상 준비되면 SAMPLE_VIDEO_URL만 교체) ──
+const SAMPLE_VIDEO_URL = ""; // ← Higgsfield로 생성된 영상의 다운로드 URL을 여기 넣으세요 (예: Google Drive 공유 URL)
+
 function HeroMockup() {
+  if (!SAMPLE_VIDEO_URL) {
+    // 영상이 아직 없을 때 보여줄 기존 와이어프레임 목업
+    return (
+      <div style={{
+        position:"relative", background:"#0d1424", border:`1px solid ${C.border}`,
+        borderRadius:20, padding:28, boxShadow:"0 50px 120px rgba(0,0,0,0.5)"
+      }}>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28}}>
+          <div style={{width:26,height:26,borderRadius:6,background:C.grad,flexShrink:0}}/>
+          <div style={{flex:1,height:10,background:"rgba(255,255,255,0.08)",borderRadius:5}}/>
+          <div style={{width:60,height:10,background:"rgba(255,255,255,0.06)",borderRadius:5}}/>
+        </div>
+        <div style={{width:"50%",height:9,background:"rgba(255,255,255,0.1)",borderRadius:4,marginBottom:10}}/>
+        <div style={{width:"35%",height:9,background:"rgba(255,255,255,0.06)",borderRadius:4,marginBottom:32}}/>
+        <div style={{display:"flex",alignItems:"center",marginBottom:36,position:"relative"}}>
+          {["done","done","active","todo","todo"].map((st,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",flex:i<4?1:0}}>
+              <div style={{
+                width:32,height:32,borderRadius:"50%",flexShrink:0,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                background: st==="done" ? "rgba(74,144,232,0.25)" : st==="active" ? "transparent" : "rgba(255,255,255,0.05)",
+                border: st==="active" ? `2px solid ${C.blue}` : st==="done" ? "none" : `1px solid ${C.border}`,
+                fontSize:13, color: st==="done" ? C.blueLight : st==="active" ? C.blue : C.muted
+              }}>
+                {st==="done" ? "✓" : st==="active" ? "···" : ""}
+              </div>
+              {i<4 && <div style={{flex:1,height:1,background:C.border,margin:"0 4px"}}/>}
+            </div>
+          ))}
+        </div>
+        <div style={{
+          position:"relative", background:"rgba(74,144,232,0.08)", border:`1px solid rgba(74,144,232,0.25)`,
+          borderRadius:12, padding:"16px 18px", marginBottom:20, maxWidth:"70%"
+        }}>
+          <div style={{width:"80%",height:8,background:"rgba(255,255,255,0.12)",borderRadius:4,marginBottom:8}}/>
+          <div style={{width:"60%",height:8,background:"rgba(255,255,255,0.08)",borderRadius:4,marginBottom:8}}/>
+          <div style={{width:"40%",height:8,background:"rgba(255,255,255,0.08)",borderRadius:4}}/>
+          <div style={{position:"absolute",bottom:-7,left:24,width:14,height:14,background:"rgba(74,144,232,0.08)",border:`1px solid rgba(74,144,232,0.25)`,borderTop:"none",borderLeft:"none",transform:"rotate(45deg)"}}/>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+          {[1,2,3].map(i=>(
+            <div key={i} style={{aspectRatio:"4/3",background:"rgba(255,255,255,0.03)",border:`1px solid ${C.border}`,borderRadius:10}}/>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // 실제 샘플 영상이 준비되면 자동 재생
   return (
     <div style={{
-      position:"relative", background:"#0d1424", border:`1px solid ${C.border}`,
-      borderRadius:20, padding:28, boxShadow:"0 50px 120px rgba(0,0,0,0.5)"
+      position:"relative", borderRadius:20, overflow:"hidden",
+      boxShadow:"0 50px 120px rgba(0,0,0,0.5)", border:`1px solid ${C.border}`,
+      background:"#0d1424"
     }}>
-      {/* 상단바 */}
-      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28}}>
-        <div style={{width:26,height:26,borderRadius:6,background:C.grad,flexShrink:0}}/>
-        <div style={{flex:1,height:10,background:"rgba(255,255,255,0.08)",borderRadius:5}}/>
-        <div style={{width:60,height:10,background:"rgba(255,255,255,0.06)",borderRadius:5}}/>
-      </div>
-
-      {/* 두 줄 텍스트 막대 */}
-      <div style={{width:"50%",height:9,background:"rgba(255,255,255,0.1)",borderRadius:4,marginBottom:10}}/>
-      <div style={{width:"35%",height:9,background:"rgba(255,255,255,0.06)",borderRadius:4,marginBottom:32}}/>
-
-      {/* 진행 스텝 (체크-체크-진행중-대기-대기) */}
-      <div style={{display:"flex",alignItems:"center",marginBottom:36,position:"relative"}}>
-        {["done","done","active","todo","todo"].map((st,i)=>(
-          <div key={i} style={{display:"flex",alignItems:"center",flex:i<4?1:0}}>
-            <div style={{
-              width:32,height:32,borderRadius:"50%",flexShrink:0,
-              display:"flex",alignItems:"center",justifyContent:"center",
-              background: st==="done" ? "rgba(74,144,232,0.25)" : st==="active" ? "transparent" : "rgba(255,255,255,0.05)",
-              border: st==="active" ? `2px solid ${C.blue}` : st==="done" ? "none" : `1px solid ${C.border}`,
-              fontSize:13, color: st==="done" ? C.blueLight : st==="active" ? C.blue : C.muted
-            }}>
-              {st==="done" ? "✓" : st==="active" ? "···" : ""}
-            </div>
-            {i<4 && <div style={{flex:1,height:1,background:C.border,margin:"0 4px"}}/>}
-          </div>
-        ))}
-      </div>
-
-      {/* 말풍선 카드 (좌측 하단에 떠있는 형태) */}
+      <video
+        autoPlay loop muted playsInline
+        style={{width:"100%", display:"block", aspectRatio:"16/10", objectFit:"cover"}}
+      >
+        <source src={SAMPLE_VIDEO_URL} type="video/mp4" />
+      </video>
       <div style={{
-        position:"relative", background:"rgba(74,144,232,0.08)", border:`1px solid rgba(74,144,232,0.25)`,
-        borderRadius:12, padding:"16px 18px", marginBottom:20, maxWidth:"70%"
-      }}>
-        <div style={{width:"80%",height:8,background:"rgba(255,255,255,0.12)",borderRadius:4,marginBottom:8}}/>
-        <div style={{width:"60%",height:8,background:"rgba(255,255,255,0.08)",borderRadius:4,marginBottom:8}}/>
-        <div style={{width:"40%",height:8,background:"rgba(255,255,255,0.08)",borderRadius:4}}/>
-        <div style={{position:"absolute",bottom:-7,left:24,width:14,height:14,background:"rgba(74,144,232,0.08)",border:`1px solid rgba(74,144,232,0.25)`,borderTop:"none",borderLeft:"none",transform:"rotate(45deg)"}}/>
-      </div>
-
-      {/* 하단 카드 3개 그리드 */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-        {[1,2,3].map(i=>(
-          <div key={i} style={{aspectRatio:"4/3",background:"rgba(255,255,255,0.03)",border:`1px solid ${C.border}`,borderRadius:10}}/>
-        ))}
-      </div>
+        position:"absolute", bottom:16, left:16,
+        background:"rgba(0,0,0,0.5)", backdropFilter:"blur(8px)",
+        borderRadius:8, padding:"6px 12px", fontSize:11, color:"#fff", ...tx
+      }}>실제 생성 결과 예시</div>
     </div>
   );
 }
@@ -245,6 +262,200 @@ function GuideCard({ title, children }) {
   );
 }
 
+// ── 클릭 한 번으로 스토리 영상 제작 섹션 ──
+const PRESETS = [
+  {
+    id: "family",
+    label: "가족 추억 스토리",
+    sub: "따뜻한 순간을 기록해요",
+    thumb: "linear-gradient(160deg,#3a2a1a,#5c4530 50%,#7a5a3a)",
+    video: "/family.mp4",
+    badge: "FAMILY STORY",
+    title: "감정을 담은 추억 영상",
+    desc: "사진과 이야기를 바탕으로\n가족의 소중한 순간을 영상으로 기록하세요.",
+    accent: "#e0a64b",
+  },
+  {
+    id: "pet",
+    label: "반려동물 일상 스토리",
+    sub: "우리 아이의 하루를 담아요",
+    thumb: "linear-gradient(160deg,#1a3a1f,#2d5a35 50%,#4a8a55)",
+    video: "/pet.mp4",
+    badge: "PET STORY",
+    title: "반려동물과의 하루",
+    desc: "사진과 이야기를 바탕으로\n반려동물과의 일상을 영상으로 기록하세요.",
+    accent: "#5dbf6e",
+  },
+  {
+    id: "history",
+    label: "조선왕조실록 스토리",
+    sub: "역사 속 이야기를 영상으로",
+    thumb: "linear-gradient(160deg,#3a2a1a,#6b4423 50%,#8a5a2a)",
+    video: "/history.mp4",
+    badge: "HISTORY STORY",
+    title: "역사 속 한 장면",
+    desc: "사진과 이야기를 바탕으로\n역사 속 순간을 영상으로 재현하세요.",
+    accent: "#c9963f",
+  },
+];
+
+function PresetCard({ preset, selected, hovering, onClick, onHover, onLeave }) {
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+      style={{
+        position:"relative", borderRadius:16, cursor:"pointer",
+        border: selected ? `2px solid ${C.blue}` : `1px solid ${C.border}`,
+        boxShadow: selected ? `0 0 0 4px rgba(74,144,232,0.15)` : "none",
+        overflow:"hidden", aspectRatio:"3/4", transition:"all 0.25s",
+        background:"#000",
+      }}
+    >
+      {hovering ? (
+        <video
+          src={preset.video}
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover"}}
+        />
+      ) : (
+        <div style={{position:"absolute", inset:0, background: preset.thumb}}/>
+      )}
+      <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.75) 100%)"}}/>
+      {selected && (
+        <div style={{position:"absolute",top:12,right:12,width:24,height:24,borderRadius:"50%",background:C.blue,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13}}>✓</div>
+      )}
+      <div style={{position:"absolute",bottom:16,left:16,right:16}}>
+        <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:4,...tx}}>{preset.label}</div>
+        <div style={{fontSize:11,color: selected ? C.blueLight : "rgba(255,255,255,0.6)",...tx}}>{preset.sub}</div>
+      </div>
+    </div>
+  );
+}
+
+function UploadBox() {
+  return (
+    <div style={{
+      border:`1.5px dashed ${C.border}`, borderRadius:16, aspectRatio:"3/4",
+      display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+      gap:14, background:"rgba(255,255,255,0.015)", padding:20, textAlign:"center"
+    }}>
+      <div style={{width:48,height:48,borderRadius:12,background:"rgba(74,144,232,0.1)",border:`1px solid rgba(74,144,232,0.25)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:C.blueLight}}>＋</div>
+      <div>
+        <div style={{fontSize:13,fontWeight:700,color:C.text,marginBottom:4,...tx}}>사진 업로드</div>
+        <div style={{fontSize:11,color:C.muted,lineHeight:1.5,...tx}}>사진 또는 문장을 업로드하여 생성<br/>JPG, PNG · 최대 50장</div>
+      </div>
+    </div>
+  );
+}
+
+function PreviewPlayer({ preset, playing, onTogglePlay }) {
+  return (
+    <div style={{
+      position:"relative", borderRadius:16, overflow:"hidden", aspectRatio:"3/4",
+      background:"#000", border:`1px solid ${preset.accent}55`,
+      boxShadow: playing ? `0 0 30px ${preset.accent}33` : "none", transition:"box-shadow 0.3s"
+    }}>
+      <video
+        key={preset.video}
+        src={preset.video}
+        autoPlay={playing}
+        loop
+        muted
+        playsInline
+        onClick={onTogglePlay}
+        style={{
+          position:"absolute", inset:0, width:"100%", height:"100%",
+          objectFit:"cover", cursor:"pointer"
+        }}
+      />
+      <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.45) 100%)",pointerEvents:"none"}}/>
+      <button onClick={onTogglePlay} style={{
+        position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)",
+        width:48, height:48, borderRadius:"50%", border:"none",
+        background:"rgba(255,255,255,0.15)", backdropFilter:"blur(6px)",
+        display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
+        color:"#fff", fontSize:16, opacity: playing ? 0 : 1, transition:"opacity 0.25s"
+      }}>▶</button>
+    </div>
+  );
+}
+
+function StoryCreatorSection() {
+  const [selected, setSelected] = useState(PRESETS[1].id);
+  const [hovered, setHovered] = useState(null);
+  const [playing, setPlaying] = useState(false);
+
+  const activePreset = PRESETS.find(p => p.id === (hovered || selected)) || PRESETS[1];
+
+  return (
+    <section style={{padding:"100px 6%",maxWidth:1280,margin:"0 auto"}}>
+      <h2 style={{fontSize:"clamp(26px,3vw,38px)",fontWeight:800,letterSpacing:-0.5,marginBottom:12,...tx}}>
+        클릭 한 번으로 스토리 영상 제작
+      </h2>
+      <p style={{fontSize:14,color:C.mutedLight,marginBottom:44,maxWidth:640,lineHeight:1.6,...tx}}>
+        가족의 추억, 반려동물의 일상, 좋아하는 이야기에서 영감을 받아 쉽고 감성적인 영상으로 만들어보세요.
+      </p>
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1.4fr 1fr",gap:24,alignItems:"start"}}>
+
+        {/* 좌측: 업로드 박스 */}
+        <div>
+          <UploadBox/>
+        </div>
+
+        {/* 중앙: 카테고리 선택 카드 3개 */}
+        <div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
+            {PRESETS.map(p=>(
+              <PresetCard
+                key={p.id}
+                preset={p}
+                selected={selected===p.id}
+                hovering={hovered===p.id}
+                onClick={()=>{setSelected(p.id); setPlaying(false);}}
+                onHover={()=>setHovered(p.id)}
+                onLeave={()=>setHovered(null)}
+              />
+            ))}
+          </div>
+          <div style={{fontSize:14,fontWeight:700,marginBottom:6,...tx}}>사전 설정을 선택하세요</div>
+          <div style={{fontSize:12,color:C.mutedLight,lineHeight:1.6,...tx}}>원하는 스토리 유형을 선택하면 분위기와 연출이 자동으로 구성됩니다.</div>
+        </div>
+
+        {/* 우측: 미리보기 플레이어 */}
+        <div>
+          <PreviewPlayer preset={activePreset} playing={playing} onTogglePlay={()=>setPlaying(p=>!p)}/>
+          <div style={{fontSize:14,fontWeight:700,marginTop:20,marginBottom:6,...tx}}>영상 미리보기</div>
+          <div style={{fontSize:12,color:C.mutedLight,lineHeight:1.6,...tx}}>선택한 스토리를 바탕으로<br/>완성된 시네마틱 영상을 바로 확인하세요.</div>
+        </div>
+      </div>
+
+      {/* 선택된 프리셋 안내 카드 (좌하단 플로팅 카드 차용) */}
+      <div style={{marginTop:32, maxWidth:340}}>
+        <div style={{
+          background:"linear-gradient(135deg,rgba(0,0,0,0.4),rgba(0,0,0,0.2))",
+          border:`1px solid ${activePreset.accent}40`, borderRadius:16, padding:20,
+          position:"relative"
+        }}>
+          <div style={{fontSize:10,fontWeight:700,color:activePreset.accent,letterSpacing:1,marginBottom:8,...tx}}>{activePreset.badge}</div>
+          <div style={{fontSize:16,fontWeight:800,marginBottom:8,...tx}}>{activePreset.title}</div>
+          <div style={{fontSize:12,color:C.mutedLight,lineHeight:1.6,marginBottom:16,whiteSpace:"pre-line",...tx}}>{activePreset.desc}</div>
+          <button style={{
+            width:"100%", background:`linear-gradient(135deg,${activePreset.accent},${activePreset.accent}cc)`,
+            border:"none", color:"#1a1208", padding:"11px", borderRadius:10, fontSize:13, fontWeight:700,
+            cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6, ...tx
+          }}>✦ 스토리 시작하기</button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [jobs, setJobs] = useState([]);
@@ -311,6 +522,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 클릭 한 번으로 스토리 영상 제작 */}
+      <StoryCreatorSection/>
 
       {/* 주요 가이드 (KRDS 하단 카드 그리드 구조) */}
       <section style={{padding:"0 6% 100px",maxWidth:1280,margin:"0 auto"}}>
