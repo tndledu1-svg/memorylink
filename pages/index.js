@@ -299,21 +299,22 @@ const PRESETS = [
   },
 ];
 
-function PresetCard({ preset, selected, hovering, onClick, onHover, onLeave }) {
+function PresetCard({ preset, selected, hovering, onClick, onHover, onLeave, compact }) {
   return (
     <div
       onClick={onClick}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       style={{
-        position:"relative", borderRadius:16, cursor:"pointer",
+        position:"relative", borderRadius:14, cursor:"pointer",
         border: selected ? `2px solid ${C.blue}` : `1px solid ${C.border}`,
         boxShadow: selected ? `0 0 0 4px rgba(74,144,232,0.15)` : "none",
-        overflow:"hidden", aspectRatio:"3/4", transition:"all 0.25s",
-        background:"#000",
+        overflow:"hidden", aspectRatio: compact ? "1" : "3/4", transition:"all 0.25s",
+        background: preset.thumb,
       }}
     >
-      {hovering ? (
+      {/* 평소엔 항상 그라디언트 썸네일이 보이고, 호버 시에만 영상이 위에 겹쳐서 재생됨 */}
+      {hovering && (
         <video
           src={preset.video}
           autoPlay
@@ -322,16 +323,14 @@ function PresetCard({ preset, selected, hovering, onClick, onHover, onLeave }) {
           playsInline
           style={{position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover"}}
         />
-      ) : (
-        <div style={{position:"absolute", inset:0, background: preset.thumb}}/>
       )}
-      <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.75) 100%)"}}/>
+      <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.7) 100%)"}}/>
       {selected && (
-        <div style={{position:"absolute",top:12,right:12,width:24,height:24,borderRadius:"50%",background:C.blue,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13}}>✓</div>
+        <div style={{position:"absolute",top:10,right:10,width:22,height:22,borderRadius:"50%",background:C.blue,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:12}}>✓</div>
       )}
-      <div style={{position:"absolute",bottom:16,left:16,right:16}}>
-        <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:4,...tx}}>{preset.label}</div>
-        <div style={{fontSize:11,color: selected ? C.blueLight : "rgba(255,255,255,0.6)",...tx}}>{preset.sub}</div>
+      <div style={{position:"absolute",bottom:14,left:14,right:14}}>
+        <div style={{fontSize:13,fontWeight:700,color:"#fff",marginBottom:3,...tx}}>{preset.label}</div>
+        <div style={{fontSize:10,color: selected ? C.blueLight : "rgba(255,255,255,0.6)",...tx}}>{preset.sub}</div>
       </div>
     </div>
   );
@@ -460,6 +459,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [heroHovered, setHeroHovered] = useState(null);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -488,19 +488,19 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO — KRDS 좌우 2단 구조 그대로 */}
+      {/* HERO — 좌: 텍스트 / 우: 카테고리 카드 3개 (스토리 프리셋) */}
       <section style={{padding:"140px 6% 100px",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 60% 50% at 70% 30%,rgba(74,144,232,0.06) 0%,transparent 70%)",pointerEvents:"none"}}/>
         <div style={{display:"flex",alignItems:"center",gap:64,maxWidth:1280,margin:"0 auto",position:"relative",zIndex:2}}>
 
           {/* 좌측: 텍스트 */}
-          <div style={{flex:1,maxWidth:480}}>
+          <div style={{flex:1,maxWidth:440}}>
             <h1 style={{fontSize:"clamp(32px,4vw,52px)",fontWeight:800,lineHeight:1.2,letterSpacing:-1,marginBottom:24,...tx}}>
               아이디어를 입력하면<br/>영상이 완성됩니다
             </h1>
             <p style={{fontSize:16,color:C.mutedLight,lineHeight:1.75,marginBottom:36,...tx}}>
-              장면을 한 줄로 설명하면<br/>
-              스토리부터 영상, 음성까지 자동으로 만들어집니다
+              가족의 추억, 반려동물의 일상, 좋아하는 이야기를<br/>
+              한 줄로 설명하면 스토리부터 영상까지 자동으로 만들어집니다
             </p>
             <div style={{display:"flex",gap:12}}>
               <button onClick={scrollToStudio} style={{
@@ -516,49 +516,23 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 우측: 목업 */}
+          {/* 우측: 카테고리 프리셋 카드 (마우스 호버 시 영상 재생) */}
           <div style={{flex:1.1}}>
-            <HeroMockup/>
-          </div>
-        </div>
-      </section>
-
-      {/* 클릭 한 번으로 스토리 영상 제작 */}
-      <StoryCreatorSection/>
-
-      {/* 주요 가이드 (KRDS 하단 카드 그리드 구조) */}
-      <section style={{padding:"0 6% 100px",maxWidth:1280,margin:"0 auto"}}>
-        <h2 style={{fontSize:22,fontWeight:800,marginBottom:28,...tx}}>제작 과정</h2>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:20}}>
-          <GuideCard title="스토리 생성">
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-              <div style={{width:18,height:18,borderRadius:4,background:"rgba(74,144,232,0.2)"}}/>
-              <div style={{flex:1,height:8,background:"rgba(255,255,255,0.08)",borderRadius:4}}/>
-            </div>
-            <div style={{width:"70%",height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,marginBottom:8}}/>
-            <div style={{width:"55%",height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,marginBottom:20}}/>
-            <div style={{display:"flex",gap:6}}>
-              <div style={{width:24,height:24,borderRadius:6,background:"rgba(255,255,255,0.05)",border:`1px solid ${C.border}`}}/>
-              <div style={{width:24,height:24,borderRadius:6,background:"rgba(255,255,255,0.05)",border:`1px solid ${C.border}`}}/>
-            </div>
-          </GuideCard>
-          <GuideCard title="영상 생성">
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-              <div style={{aspectRatio:"1",background:"rgba(74,144,232,0.1)",borderRadius:8,border:`1px solid rgba(74,144,232,0.25)`}}/>
-              <div style={{aspectRatio:"1",background:"rgba(255,255,255,0.04)",borderRadius:8,border:`1px solid ${C.border}`}}/>
-            </div>
-            <div style={{width:"60%",height:8,background:"rgba(255,255,255,0.06)",borderRadius:4}}/>
-          </GuideCard>
-          <GuideCard title="저장 및 전달">
-            <div style={{display:"flex",flexDirection:"column",gap:10}}>
-              {[1,1,0].map((on,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
-                  <div style={{width:16,height:16,borderRadius:"50%",background:on?"rgba(74,144,232,0.25)":"rgba(255,255,255,0.05)",border:on?"none":`1px solid ${C.border}`}}/>
-                  <div style={{flex:1,height:7,background:"rgba(255,255,255,0.06)",borderRadius:4}}/>
-                </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+              {PRESETS.map(p=>(
+                <PresetCard
+                  key={p.id}
+                  preset={p}
+                  selected={false}
+                  hovering={heroHovered===p.id}
+                  onClick={()=>{}}
+                  onHover={()=>setHeroHovered(p.id)}
+                  onLeave={()=>setHeroHovered(null)}
+                />
               ))}
             </div>
-          </GuideCard>
+            <div style={{textAlign:"center",fontSize:12,color:C.muted,marginTop:16,...tx}}>카드에 마우스를 올리면 실제 생성된 영상을 확인할 수 있습니다</div>
+          </div>
         </div>
       </section>
 
