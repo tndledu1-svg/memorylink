@@ -76,40 +76,57 @@ function JobResultModal({ job, onClose }) {
   );
 }
 
-// ── 파이프라인 단계 다이어그램 (배지 제거, 카드형 도식으로 교체) ──
-function PipelineDiagram() {
-  const steps = [
-    { n:"01", title:"스토리 생성", desc:"입력한 장면을 바탕으로 시나리오와 대본을 작성합니다" },
-    { n:"02", title:"영상 생성", desc:"이미지를 만들고 이를 영상으로 변환합니다" },
-    { n:"03", title:"음성 합성", desc:"대본을 자연스러운 목소리로 변환합니다" },
-    { n:"04", title:"저장 및 전달", desc:"완성된 영상·음성·자막을 함께 저장합니다" },
-  ];
+// ── 우측 목업: KRDS 스타일 (상단바 + 진행 스텝 + 말풍선 + 하단 카드) ──
+function HeroMockup() {
   return (
     <div style={{
-      background:"rgba(255,255,255,0.02)", border:`1px solid ${C.border}`, borderRadius:20,
-      padding:"32px 28px", marginTop:48
+      position:"relative", background:"#0d1424", border:`1px solid ${C.border}`,
+      borderRadius:20, padding:28, boxShadow:"0 50px 120px rgba(0,0,0,0.5)"
     }}>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16}}>
-        {steps.map((s,i)=>(
-          <div key={s.n} style={{position:"relative"}}>
+      {/* 상단바 */}
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:28}}>
+        <div style={{width:26,height:26,borderRadius:6,background:C.grad,flexShrink:0}}/>
+        <div style={{flex:1,height:10,background:"rgba(255,255,255,0.08)",borderRadius:5}}/>
+        <div style={{width:60,height:10,background:"rgba(255,255,255,0.06)",borderRadius:5}}/>
+      </div>
+
+      {/* 두 줄 텍스트 막대 */}
+      <div style={{width:"50%",height:9,background:"rgba(255,255,255,0.1)",borderRadius:4,marginBottom:10}}/>
+      <div style={{width:"35%",height:9,background:"rgba(255,255,255,0.06)",borderRadius:4,marginBottom:32}}/>
+
+      {/* 진행 스텝 (체크-체크-진행중-대기-대기) */}
+      <div style={{display:"flex",alignItems:"center",marginBottom:36,position:"relative"}}>
+        {["done","done","active","todo","todo"].map((st,i)=>(
+          <div key={i} style={{display:"flex",alignItems:"center",flex:i<4?1:0}}>
             <div style={{
-              display:"flex",alignItems:"center",gap:10,marginBottom:10
+              width:32,height:32,borderRadius:"50%",flexShrink:0,
+              display:"flex",alignItems:"center",justifyContent:"center",
+              background: st==="done" ? "rgba(74,144,232,0.25)" : st==="active" ? "transparent" : "rgba(255,255,255,0.05)",
+              border: st==="active" ? `2px solid ${C.blue}` : st==="done" ? "none" : `1px solid ${C.border}`,
+              fontSize:13, color: st==="done" ? C.blueLight : st==="active" ? C.blue : C.muted
             }}>
-              <div style={{
-                width:30,height:30,borderRadius:8,border:`1px solid ${C.border}`,
-                display:"flex",alignItems:"center",justifyContent:"center",
-                fontSize:12,fontWeight:700,color:C.blueLight,flexShrink:0,...tx
-              }}>{s.n}</div>
-              <div style={{fontSize:14,fontWeight:700,color:C.text,...tx}}>{s.title}</div>
+              {st==="done" ? "✓" : st==="active" ? "···" : ""}
             </div>
-            <div style={{fontSize:12,color:C.mutedLight,lineHeight:1.6,...tx}}>{s.desc}</div>
-            {i<steps.length-1&&(
-              <div style={{
-                position:"absolute", top:15, right:-24, width:24, height:1,
-                background:C.border, display:"none"
-              }}/>
-            )}
+            {i<4 && <div style={{flex:1,height:1,background:C.border,margin:"0 4px"}}/>}
           </div>
+        ))}
+      </div>
+
+      {/* 말풍선 카드 (좌측 하단에 떠있는 형태) */}
+      <div style={{
+        position:"relative", background:"rgba(74,144,232,0.08)", border:`1px solid rgba(74,144,232,0.25)`,
+        borderRadius:12, padding:"16px 18px", marginBottom:20, maxWidth:"70%"
+      }}>
+        <div style={{width:"80%",height:8,background:"rgba(255,255,255,0.12)",borderRadius:4,marginBottom:8}}/>
+        <div style={{width:"60%",height:8,background:"rgba(255,255,255,0.08)",borderRadius:4,marginBottom:8}}/>
+        <div style={{width:"40%",height:8,background:"rgba(255,255,255,0.08)",borderRadius:4}}/>
+        <div style={{position:"absolute",bottom:-7,left:24,width:14,height:14,background:"rgba(74,144,232,0.08)",border:`1px solid rgba(74,144,232,0.25)`,borderTop:"none",borderLeft:"none",transform:"rotate(45deg)"}}/>
+      </div>
+
+      {/* 하단 카드 3개 그리드 */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+        {[1,2,3].map(i=>(
+          <div key={i} style={{aspectRatio:"4/3",background:"rgba(255,255,255,0.03)",border:`1px solid ${C.border}`,borderRadius:10}}/>
         ))}
       </div>
     </div>
@@ -218,46 +235,12 @@ function MakeStudio({ onJobSubmit }) {
   );
 }
 
-// ── Hero 우측 목업 (KRDS 스타일: 카드 안에 가짜 UI 미리보기) ──
-function HeroMockup() {
+// ── "주요 가이드" 섹션 카드 (KRDS 3단 카드 와이어프레임 차용) ──
+function GuideCard({ title, children }) {
   return (
-    <div style={{
-      background:"rgba(255,255,255,0.03)", border:`1px solid ${C.border}`,
-      borderRadius:20, padding:8, maxWidth:560, margin:"0 auto",
-      boxShadow:"0 40px 100px rgba(0,0,0,0.4)"
-    }}>
-      <div style={{background:"rgba(8,12,22,0.9)", borderRadius:14, padding:24}}>
-        {/* 가짜 상단바 */}
-        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20}}>
-          <div style={{width:10,height:10,borderRadius:"50%",background:"rgba(255,255,255,0.15)"}}/>
-          <div style={{width:10,height:10,borderRadius:"50%",background:"rgba(255,255,255,0.15)"}}/>
-          <div style={{width:10,height:10,borderRadius:"50%",background:"rgba(255,255,255,0.15)"}}/>
-          <div style={{flex:1,height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,marginLeft:8}}/>
-        </div>
-        {/* 가짜 입력줄 */}
-        <div style={{height:36,background:"rgba(255,255,255,0.05)",borderRadius:8,marginBottom:14,display:"flex",alignItems:"center",padding:"0 14px"}}>
-          <div style={{width:"60%",height:8,background:"rgba(255,255,255,0.15)",borderRadius:4}}/>
-        </div>
-        {/* 가짜 진행 단계 */}
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:20}}>
-          {[1,1,0.4,0,0].map((op,i)=>(
-            <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-              <div style={{
-                width:24,height:24,borderRadius:"50%",
-                background: op===1 ? C.grad : op===0.4 ? "rgba(74,144,232,0.3)" : "rgba(255,255,255,0.06)",
-                display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff"
-              }}>{op===1?"✓":""}</div>
-              <div style={{width:"70%",height:5,background:"rgba(255,255,255,0.08)",borderRadius:3}}/>
-            </div>
-          ))}
-        </div>
-        {/* 가짜 결과 영역 */}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-          {[1,2,3].map(i=>(
-            <div key={i} style={{aspectRatio:"9/16",background:"rgba(255,255,255,0.04)",borderRadius:8,border:`1px solid ${C.border}`}}/>
-          ))}
-        </div>
-      </div>
+    <div style={{background:"rgba(255,255,255,0.02)",border:`1px solid ${C.border}`,borderRadius:16,padding:24,minHeight:260,display:"flex",flexDirection:"column"}}>
+      <div style={{fontSize:14,fontWeight:700,color:C.text,marginBottom:18,...tx}}>{title}</div>
+      <div style={{flex:1}}>{children}</div>
     </div>
   );
 }
@@ -294,40 +277,78 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO — KRDS 구조: 중앙 정렬 제목+설명+버튼, 그 아래 목업 */}
-      <section style={{padding:"140px 6% 80px",textAlign:"center",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 70% 50% at 50% 0%,rgba(74,144,232,0.07) 0%,transparent 70%)",pointerEvents:"none"}}/>
+      {/* HERO — KRDS 좌우 2단 구조 그대로 */}
+      <section style={{padding:"140px 6% 100px",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 60% 50% at 70% 30%,rgba(74,144,232,0.06) 0%,transparent 70%)",pointerEvents:"none"}}/>
+        <div style={{display:"flex",alignItems:"center",gap:64,maxWidth:1280,margin:"0 auto",position:"relative",zIndex:2}}>
 
-        <h1 style={{fontSize:"clamp(34px,4.5vw,58px)",fontWeight:800,lineHeight:1.15,letterSpacing:-1,marginBottom:24,maxWidth:780,margin:"0 auto 24px",...tx}}>
-          아이디어를 입력하면<br/>영상이 완성됩니다
-        </h1>
-        <p style={{fontSize:16,color:C.mutedLight,lineHeight:1.75,maxWidth:560,margin:"0 auto 36px",...tx}}>
-          장면을 한 줄로 설명하면 스토리 작성부터 영상 제작, 음성 합성까지<br/>
-          모든 과정이 자동으로 진행됩니다
-        </p>
-        <div style={{display:"flex",gap:12,justifyContent:"center",marginBottom:64}}>
-          <button onClick={scrollToStudio} style={{
-            background:C.grad, border:"none", color:"#fff",
-            padding:"14px 32px", borderRadius:10, fontSize:14, fontWeight:700, cursor:"pointer",
-            ...tx
-          }}>지금 시작하기</button>
-          <button style={{
-            background:"transparent", border:`1px solid ${C.border}`, color:C.mutedLight,
-            padding:"14px 32px", borderRadius:10, fontSize:14, fontWeight:600, cursor:"pointer",
-            ...tx
-          }}>자세히 보기</button>
-        </div>
+          {/* 좌측: 텍스트 */}
+          <div style={{flex:1,maxWidth:480}}>
+            <h1 style={{fontSize:"clamp(32px,4vw,52px)",fontWeight:800,lineHeight:1.2,letterSpacing:-1,marginBottom:24,...tx}}>
+              아이디어를 입력하면<br/>영상이 완성됩니다
+            </h1>
+            <p style={{fontSize:16,color:C.mutedLight,lineHeight:1.75,marginBottom:36,...tx}}>
+              장면을 한 줄로 설명하면<br/>
+              스토리부터 영상, 음성까지 자동으로 만들어집니다
+            </p>
+            <div style={{display:"flex",gap:12}}>
+              <button onClick={scrollToStudio} style={{
+                background:"#fff", border:"none", color:"#0a0e1a",
+                padding:"13px 28px", borderRadius:10, fontSize:14, fontWeight:700, cursor:"pointer",
+                ...tx
+              }}>시작하기</button>
+              <button style={{
+                background:"transparent", border:`1px solid ${C.border}`, color:C.text,
+                padding:"13px 28px", borderRadius:10, fontSize:14, fontWeight:600, cursor:"pointer",
+                ...tx
+              }}>자세히 보기</button>
+            </div>
+          </div>
 
-        {/* 우측 목업 → 가운데 큰 목업으로 (KRDS 구조 차용) */}
-        <HeroMockup/>
-
-        {/* 파이프라인 단계 — 알약뱃지 대신 카드형 도식 */}
-        <div style={{maxWidth:960,margin:"0 auto"}}>
-          <PipelineDiagram/>
+          {/* 우측: 목업 */}
+          <div style={{flex:1.1}}>
+            <HeroMockup/>
+          </div>
         </div>
       </section>
 
-      {/* STUDIO — 별도 섹션으로 분리 */}
+      {/* 주요 가이드 (KRDS 하단 카드 그리드 구조) */}
+      <section style={{padding:"0 6% 100px",maxWidth:1280,margin:"0 auto"}}>
+        <h2 style={{fontSize:22,fontWeight:800,marginBottom:28,...tx}}>제작 과정</h2>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:20}}>
+          <GuideCard title="스토리 생성">
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+              <div style={{width:18,height:18,borderRadius:4,background:"rgba(74,144,232,0.2)"}}/>
+              <div style={{flex:1,height:8,background:"rgba(255,255,255,0.08)",borderRadius:4}}/>
+            </div>
+            <div style={{width:"70%",height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,marginBottom:8}}/>
+            <div style={{width:"55%",height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,marginBottom:20}}/>
+            <div style={{display:"flex",gap:6}}>
+              <div style={{width:24,height:24,borderRadius:6,background:"rgba(255,255,255,0.05)",border:`1px solid ${C.border}`}}/>
+              <div style={{width:24,height:24,borderRadius:6,background:"rgba(255,255,255,0.05)",border:`1px solid ${C.border}`}}/>
+            </div>
+          </GuideCard>
+          <GuideCard title="영상 생성">
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+              <div style={{aspectRatio:"1",background:"rgba(74,144,232,0.1)",borderRadius:8,border:`1px solid rgba(74,144,232,0.25)`}}/>
+              <div style={{aspectRatio:"1",background:"rgba(255,255,255,0.04)",borderRadius:8,border:`1px solid ${C.border}`}}/>
+            </div>
+            <div style={{width:"60%",height:8,background:"rgba(255,255,255,0.06)",borderRadius:4}}/>
+          </GuideCard>
+          <GuideCard title="저장 및 전달">
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {[1,1,0].map((on,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{width:16,height:16,borderRadius:"50%",background:on?"rgba(74,144,232,0.25)":"rgba(255,255,255,0.05)",border:on?"none":`1px solid ${C.border}`}}/>
+                  <div style={{flex:1,height:7,background:"rgba(255,255,255,0.06)",borderRadius:4}}/>
+                </div>
+              ))}
+            </div>
+          </GuideCard>
+        </div>
+      </section>
+
+      {/* STUDIO */}
       <section id="studio-section" style={{padding:"100px 6%",background:"rgba(255,255,255,0.015)",borderTop:`1px solid ${C.border}`}}>
         <div style={{textAlign:"center",marginBottom:48}}>
           <h2 style={{fontSize:"clamp(24px,3vw,36px)",fontWeight:800,letterSpacing:-0.5,marginBottom:12,...tx}}>영상 만들기</h2>
@@ -366,6 +387,9 @@ export default function Home() {
         @keyframes progress{from{width:0%}to{width:95%}}
         input,select,textarea{font-family:'Inter','Segoe UI',system-ui,sans-serif}
         input::placeholder,textarea::placeholder{color:#4a5568}
+        @media (max-width: 900px) {
+          section > div[style*="display:flex"][style*="gap:64"] { flex-direction:column; }
+        }
       `}</style>
     </div>
   );
