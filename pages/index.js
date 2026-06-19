@@ -268,7 +268,7 @@ const PRESETS = [
     id: "family",
     label: "가족 추억 스토리",
     sub: "따뜻한 순간을 기록해요",
-    thumb: "linear-gradient(160deg,#3a2a1a,#5c4530 50%,#7a5a3a)",
+    thumb: "/family-thumb.png",
     video: "/family.mp4",
     badge: "FAMILY STORY",
     title: "감정을 담은 추억 영상",
@@ -279,7 +279,7 @@ const PRESETS = [
     id: "pet",
     label: "반려동물 일상 스토리",
     sub: "우리 아이의 하루를 담아요",
-    thumb: "linear-gradient(160deg,#1a3a1f,#2d5a35 50%,#4a8a55)",
+    thumb: "/pet-thumb.png",
     video: "/pet.mp4",
     badge: "PET STORY",
     title: "반려동물과의 하루",
@@ -290,7 +290,7 @@ const PRESETS = [
     id: "history",
     label: "조선왕조실록 스토리",
     sub: "역사 속 이야기를 영상으로",
-    thumb: "linear-gradient(160deg,#3a2a1a,#6b4423 50%,#8a5a2a)",
+    thumb: "/history-thumb.png",
     video: "/history.mp4",
     badge: "HISTORY STORY",
     title: "역사 속 한 장면",
@@ -310,10 +310,18 @@ function PresetCard({ preset, selected, hovering, onClick, onHover, onLeave, com
         border: selected ? `2px solid ${C.blue}` : `1px solid ${C.border}`,
         boxShadow: selected ? `0 0 0 4px rgba(74,144,232,0.15)` : "none",
         overflow:"hidden", aspectRatio: compact ? "1" : "3/4", transition:"all 0.25s",
-        background: preset.thumb,
+        background:"#0d1424",
       }}
     >
-      {/* 평소엔 항상 그라디언트 썸네일이 보이고, 호버 시에만 영상이 위에 겹쳐서 재생됨 */}
+      {/* 평소엔 정지 썸네일 이미지, 호버 시에만 영상이 위에 겹쳐서 재생됨 */}
+      <img
+        src={preset.thumb}
+        alt={preset.label}
+        style={{
+          position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover",
+          opacity: hovering ? 0 : 1, transition:"opacity 0.2s"
+        }}
+      />
       {hovering && (
         <video
           src={preset.video}
@@ -495,7 +503,7 @@ export default function Home() {
 
           {/* 좌측: 텍스트 */}
           <div style={{flex:1,maxWidth:440}}>
-            <h1 style={{fontSize:"clamp(32px,4vw,52px)",fontWeight:800,lineHeight:1.2,letterSpacing:-1,marginBottom:24,...tx}}>
+            <h1 style={{fontSize:"clamp(28px,3.6vw,52px)",fontWeight:800,lineHeight:1.25,letterSpacing:-1,marginBottom:24,wordBreak:"keep-all",...tx}}>
               아이디어를 입력하면<br/>영상이 완성됩니다
             </h1>
             <p style={{fontSize:16,color:C.mutedLight,lineHeight:1.75,marginBottom:36,...tx}}>
